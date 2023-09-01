@@ -1,0 +1,14 @@
+{
+  "tabWidth": 2,
+  "singleQuote": true,
+  "semi": false,
+  "trailingComma": "none",
+  "arrowParens": "avoid",
+  "endOfLine": "lf",
+  "printWidth": 100,
+  "htmlWhitespaceSensitivity": "ignore"
+}
+
+
+
+

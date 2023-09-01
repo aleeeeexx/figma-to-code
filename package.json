@@ -2,11 +2,13 @@
   "name": "lowcodegogogo",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint:script": "eslint --ext .js,.jsx,.ts,.tsx --fix --quiet ./src",
+    "lint:style": "stylelint --fix \"src/**/*.{css,scss}\"",
+    "prepare": "husky install"
   },
   "dependencies": {
     "axios": "^1.5.0",
@@ -14,11 +16,32 @@
     "vue": "^3.3.4"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.7.1",
+    "@commitlint/config-conventional": "^17.7.0",
     "@figma/plugin-typings": "^1.76.0",
     "@types/node": "^20.5.7",
+    "@typescript-eslint/eslint-plugin": "^6.5.0",
+    "@typescript-eslint/parser": "^6.5.0",
     "@vitejs/plugin-vue": "^4.2.3",
+    "add": "^2.0.6",
+    "commitlint": "^17.7.1",
+    "eslint": "^8.48.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "husky": "^8.0.3",
+    "i": "^0.3.7",
+    "lint-staged": "^14.0.1",
+    "prettier": "^3.0.3",
+    "sass": "^1.66.1",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
     "vue-tsc": "^1.8.5"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,vue}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   }
 }

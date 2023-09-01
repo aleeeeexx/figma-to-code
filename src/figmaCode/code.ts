@@ -15,7 +15,7 @@ figma.showUI(__html__, {
 
 const nodes: RectangleNode[] = []
 
-figma.ui.onmessage = (msg) => {
+figma.ui.onmessage = msg => {
   if (msg.type === 'add-block') {
     const rect = figma.createRectangle()
     rect.x = nodes.length * 150
