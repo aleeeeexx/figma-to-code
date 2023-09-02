@@ -54,6 +54,6 @@
       "prettier --write",
       "eslint --fix"
     ],
-    "*.{css,less,scss,vue}": "lint:stylelint"
+    "*.{css,less,scss,vue}": "stylelint --fix"
   }
 }
