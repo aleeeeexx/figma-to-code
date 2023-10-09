@@ -1,18 +1,22 @@
-# Vue 3 + TypeScript + Vite
+# Vue3+vite
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+figma基本插件，目前支持图层获取，后续计划将获取图层转化为代码，逐步完善中
 
-## Recommended IDE Setup
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 
-## Type Support For `.vue` Imports in TS
+## 使用方法
+点击图层，然后点击获取按钮便可获取图层数据
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+## 开发说明
+figma插件主要分为两个部分
+code.js：运行在主进程隔离沙箱里，可访问专门的 API 来操作 Figma 文档
+index.html：通过 iframe 嵌入在页面里的插件UI
 
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+两部分通过postmessage通信
+
+index.html部分通过vue编译生成，支持两种模式：
+1. main.js以及css通过外链形式在index.html中引入，但是在开发的时候会比较麻烦，要先编译后再运行一个本地服务器供main.js和css运行，不然插件获取不到这两个资源。
+2. 把资源都打包到index.html,在使用前build一下即可，默认第二种模式。
+
+
