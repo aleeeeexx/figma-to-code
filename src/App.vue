@@ -14,21 +14,4 @@ import index from './pages/index/index.vue'
   <index />
 </template>
 
-<style scoped>
-h1 {
-  text-align: center;
-}
-p {
-  color: red;
-}
-.buttons {
-  margin-top: 20px;
-  text-align: center;
-}
-.buttons button {
-  width: 40px;
-}
-#block-num {
-  font-size: 20px;
-}
-</style>
+<style scoped></style>

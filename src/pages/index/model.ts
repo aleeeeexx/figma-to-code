@@ -8,8 +8,8 @@
 import { ref } from 'vue'
 
 export const useModel = () => {
-  const name = ref('vue-mvp')
-  return { name }
+  const url = ref('http://localhost:3000/submitFigmaData')
+  return { url }
 }
 
 export type Model = ReturnType<typeof useModel>

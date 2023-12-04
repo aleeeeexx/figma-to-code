@@ -2,3 +2,18 @@
   font-size: 20px;
   color: yellow;
 }
+.addr {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  .addr-label {
+    margin-right: 8px;
+    font-size: 14px;
+  }
+  .addr-input {
+    height: 40px;
+    font-size: 14px;
+    border-radius: 8px;
+    flex: 1;
+  }
+}

@@ -6,13 +6,20 @@
  * @FilePath: /LowCodeGoGoGo/src/figmaCode/code.ts
  * @Description: figma插件的入口文件
  */
+
 console.log('figma plugin code runs!')
 import { initListenFigma } from './listenFigma'
+import { useTransDesign } from './listenUiMethods/useTransDesign'
 figma.showUI(__html__, {
   width: 400,
   height: 400
 })
 
+// -------监听figma事件-----
+initListenFigma()
+
+// ------监听ui事件------
+const { handleTrasferFigmaDesignData } = useTransDesign()
 const nodes: RectangleNode[] = []
 const handleMaps: { [key: string]: () => void } = {
   'add-block': () => {
@@ -28,16 +35,9 @@ const handleMaps: { [key: string]: () => void } = {
       rect.remove()
     }
   },
-  'transformer-design': () => {
-    const nodes = figma.currentPage.selection
-    console.log(nodes, '当前选择的元素')
-  }
+  'transformer-design': handleTrasferFigmaDesignData
 }
-
 figma.ui.onmessage = (msg: { type: string }) => {
   handleMaps[msg.type]()
   figma.viewport.scrollAndZoomIntoView(nodes)
 }
-
-// 监听figma事件
-initListenFigma()
