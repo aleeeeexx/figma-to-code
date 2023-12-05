@@ -9,7 +9,7 @@
   <div class="addr">
     <div class="addr-label">发送地址:</div>
     <input
-      placeholder="请输入要发送的后端地址，默认http://localhost:3000/submitFigmaData"
+      placeholder="请输入要发送的后端地址，默认http://localhost:2023/submitFigmaData"
       v-model="model.url.value"
       class="addr-input"
     />

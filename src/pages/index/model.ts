@@ -8,7 +8,7 @@
 import { ref } from 'vue'
 
 export const useModel = () => {
-  const url = ref('http://localhost:3000/submitFigmaData')
+  const url = ref('http://localhost:2023/submitFigmaData')
   return { url }
 }
 

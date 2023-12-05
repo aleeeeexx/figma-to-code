@@ -52,7 +52,7 @@ export const usePresenter = () => {
   const submitFigmaDataToVscode = (data: any) => {
     axios
       .post(model.url.value, {
-        formITems: data
+        figmaData: { type: '表单', formItems: data, defineProps: false, defineEmits: false }
       })
       .then(response => {
         console.log(response.data)
