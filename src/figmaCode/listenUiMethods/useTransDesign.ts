@@ -1,5 +1,5 @@
 export const useTransDesign = () => {
-  interface translateDataType {
+  interface BaseComponentType {
     name?: string
     type?: string
     optional?: boolean
@@ -34,173 +34,112 @@ export const useTransDesign = () => {
     extra?: boolean
   }
 
-  let formItems: translateDataType[] = []
+  const baseComponent: BaseComponentType = {
+    type: '',
+    optional: false,
+    defaultValue: '',
+    component: '',
+    required: false,
+    showMore: false,
+    key: '',
+    label: ''
+  }
+  let formItems: BaseComponentType[] = []
+  const componentMapping: {
+    [key: string]: BaseComponentType
+  } = {
+    'van-cell': { component: 'van-cell', type: 'string', defaultValue: '' },
+    'van-cell van-field': { component: 'input', type: 'string', defaultValue: '' },
+    'van-switch': { component: 'van-switch', type: 'boolean', defaultValue: true },
+    'van-checkbox': { component: 'van-checkbox', type: 'boolean', defaultValue: true },
+    'van-checkbox-group': { component: 'van-checkbox-group', type: 'string[]', defaultValue: [] },
+    'van-radio-group': { component: 'van-radio-group', type: 'string', defaultValue: '' },
+    'van-stepper': { component: 'van-stepper', type: 'number', defaultValue: 0 },
+    'van-uploader': { component: 'van-uploader', type: 'string[]', defaultValue: [] },
+    'van-picker': {
+      component: 'van-picker',
+      type: 'string',
+      defaultValue: '',
+      readonly: true,
+      clickable: true,
+      isLink: true
+    },
+    'van-datetime-picker': {
+      component: 'van-datetime-picker',
+      type: 'string',
+      defaultValue: '',
+      readonly: true,
+      clickable: true,
+      isLink: true
+    }
+    // 其他组件映射
+    // ...
+  }
 
   const transformerFigmaData = () => {
-    const selectionNodes =
-      figma.currentPage.selection.length > 0
-        ? figma.currentPage.selection
-        : figma.currentPage.children
-    if (!selectionNodes || selectionNodes.length === 0) return console.log('请先选择元素！')
-    console.log(selectionNodes, '当前选择的元素')
-    const formNode = selectionNodes[0]
-    if (formNode.name !== 'form') return console.log('请先选择form表单！')
-    if ('children' in formNode) {
-      console.log(formNode.children, 'formNode.children')
-      formNode.children.forEach((formItemNode, idx) => fillData(formItemNode, idx))
+    const selectedNodes = figma.currentPage.selection
+    if (selectedNodes.length === 0) return figma.notify('请先选中要转换的设计稿！')
+    if (selectedNodes.length > 1) return figma.notify('一次只能选中一个组件！')
+    console.log(selectedNodes, '当前选择的元素')
+    const selectedNode = selectedNodes[0]
+    fillFormItemData(selectedNode)
+  }
+
+  const findLabel = (figmaNode: SceneNode, formItemObj: BaseComponentType): boolean => {
+    if (!figmaNode || !figmaNode.visible) return false
+    if (figmaNode.name === 'van-field__label' && figmaNode.visible) {
+      if ('children' in figmaNode && 'characters' in figmaNode.children[0]) {
+        console.log(figmaNode.children[0].characters, 'figmaNode.children')
+        formItemObj.label = figmaNode.children[0].characters
+        return true // 返回 true 表示找到了标签
+      }
     } else {
-      console.log('表单中没有FormItem')
+      if ('children' in figmaNode) {
+        for (const childNode of figmaNode.children) {
+          const found = findLabel(childNode, formItemObj)
+          if (found) return true // 如果在子节点中找到标签，提前退出循环
+        }
+      }
     }
-  }
-  const fillData = (node: SceneNode, idx: number) => {
-    //node-select级别的组件
-    const formItemObj: translateDataType = {
-      type: '',
-      optional: false,
-      defaultValue: '',
-      component: '',
-      required: false,
-      showMore: false,
-      key: 'value' + idx,
-      label: ''
-    }
-    // {
-    //       type: 'string',
-    //       optional: false,
-    //       defaultValue: '""',
-    //       component: 'van-switch',
-    //       required: false,
-    //       showMore: false,
-    //       slots: false,
-    //       key: 't',
-    //       label: 't'
-    //     },
-    const traslatedFormItem = fillInputData(node, formItemObj)
-    console.log(traslatedFormItem, 'traslatedFormItem')
-    traslatedFormItem && formItems.push(traslatedFormItem)
+    return false // 如果没有找到标签，返回 false
   }
 
-  // 填充input框的数据
-  const fillInputData = (figmaNode: SceneNode, formItemObj: translateDataType) => {
-    if (!figmaNode.visible) return
-
-    // van-cell节点
-    if (figmaNode.name === 'van-cell') {
-      formItemObj.component = 'van-cell'
-      formItemObj.type = 'string'
-    }
-    // input节点
-    if (figmaNode.name === 'van-cell van-field') {
-      formItemObj.component = 'input'
-      formItemObj.type = 'string'
-    }
-
-    // switch节点
-    if (figmaNode.name.includes('van-switch')) {
-      formItemObj.component = 'van-switch'
-      formItemObj.type = 'boolean'
-      formItemObj.defaultValue = true
-    }
-
-    // checkbox节点
-    if (figmaNode.name.includes('van-checkbox')) {
-      formItemObj.component = 'van-checkbox'
-      formItemObj.type = 'boolean'
-      formItemObj.defaultValue = true
-    }
-
-    // checkbox-group节点
-    // group节点要放到checkbox后面，因为van-checkbox的数据会自动生成包含van - checkbox的结构爱, 包含关系，
-    if (figmaNode.name.includes('van-checkbox-group')) {
-      formItemObj.component = 'van-checkbox-group'
-      formItemObj.type = 'string[]'
-      formItemObj.defaultValue = []
-    }
-
-    // radio-group节点,一般和radio节点一起使用,因此不需要单独处理radio
-    if (figmaNode.name.includes('van-radio-group')) {
-      formItemObj.component = 'input'
-      formItemObj.type = 'string'
-    }
-
-    // van-stepper节点
-    if (figmaNode.name.includes('van-stepper')) {
-      formItemObj.component = 'van-stepper'
-      formItemObj.type = 'number'
-      formItemObj.defaultValue = 0
-    }
-
-    //van-uploader节点
-    if (figmaNode.name.includes('van-uploader')) {
-      formItemObj.component = 'van-uploader'
-      formItemObj.type = 'string[]'
-      formItemObj.defaultValue = []
-    }
-
-    // van-picker节点:这个节点需要设计师标注它是一个van-picker,才可识别，因为它默认的node.name是一个禁用的input
-    if (figmaNode.name.includes('picker')) {
-      formItemObj.component = 'van-picker'
-      formItemObj.type = 'string'
-      formItemObj.readonly = true
-      formItemObj.clickable = true
-      formItemObj.isLink = true
-    }
-
-    //van-time-picker:这个节点需要设计师标注它是一个van-datetime-picker,才可识别，因为它默认的node.name是一个禁用的input
-    if (figmaNode.name.includes('van-datetime-picker')) {
-      formItemObj.component = 'van-datetime-picker'
-      formItemObj.type = 'string'
-      formItemObj.readonly = true
-      formItemObj.clickable = true
-      formItemObj.isLink = true
-    }
-
-    if ('children' in figmaNode) {
-      figmaNode.children.forEach(childNode => {
-        //寻找label的值
-        if (childNode.name === 'van-field__label' && childNode.visible) {
-          if ('children' in childNode && 'characters' in childNode.children[0]) {
-            formItemObj.label = childNode.children[0].characters
-          }
-        } else {
-          fillInputData(childNode, formItemObj)
+  const findRequired = (figmaNode: SceneNode, formItemObj: BaseComponentType): boolean => {
+    if (!figmaNode || !figmaNode.visible) return false
+    if (figmaNode.name === 'required' && figmaNode.visible) {
+      formItemObj.required = true
+      return true
+    } else {
+      if ('children' in figmaNode) {
+        for (const childNode of figmaNode.children) {
+          const found = findRequired(childNode, formItemObj)
+          if (found) return true
         }
+      }
+    }
+    return false
+  }
 
-        //寻找是否require
-        if (childNode.name === 'required' && childNode.visible) {
-          formItemObj.required = true
-        } else {
-          fillInputData(childNode, formItemObj)
-        }
+  const processNodeForAttributes = (node: SceneNode, formItemObj: BaseComponentType) => {
+    findLabel(node, formItemObj)
+    findRequired(node, formItemObj)
+  }
 
-        // 寻找是否有右箭头
-        //寻找...
-        //todo:优化递归
+  // 递归寻找表单组件，并填充数据
+  const fillFormItemData = (figmaNode: SceneNode) => {
+    if (!figmaNode.visible || !figmaNode) return
+    const componentInfo = componentMapping[figmaNode.name]
+    if (componentInfo) {
+      // const formItemObj = { ...baseComponent, ...componentInfo, key: `value${formItems.length}` }
+      const formItemObj = Object.assign({}, baseComponent, componentInfo, {
+        key: `value${formItems.length}`
       })
+      processNodeForAttributes(figmaNode, formItemObj)
+      formItems.push(formItemObj)
+    } else if ('children' in figmaNode) {
+      figmaNode.children.forEach(childNode => fillFormItemData(childNode))
     }
-    return formItemObj
   }
-
-  // //填充switch的数据
-  // const fillSwitchData = (figmaNode: SceneNode, formItemObj: translateDataType) => {
-  //   if (figmaNode.name.includes('switch')) {
-  //     formItemObj.component = 'switch'
-  //     formItemObj.type = 'boolean'
-  //   }
-  //   if ('children' in figmaNode) {
-  //     figmaNode.children.forEach(childNode => {
-  //       //寻找label的值
-  //       if (childNode.name === 'van-switch__label' && childNode.visible) {
-  //         if ('children' in childNode && 'characters' in childNode.children[0]) {
-  //           formItemObj.label = childNode.children[0].characters
-  //         }
-  //       } else {
-  //         fillSwitchData(childNode, formItemObj)
-  //       }
-  //     })
-  //   }
-  //   return formItemObj
-  // }
 
   const submitFigmaDataToVSLowCodePlugin = () => {
     figma.ui.postMessage({ type: 'node-data', data: formItems })
@@ -210,6 +149,7 @@ export const useTransDesign = () => {
     formItems = []
     transformerFigmaData()
     console.log(formItems, '转换好的表单数据')
+    if (formItems.length === 0) return console.log('选中的页面中没有表单元素！')
     submitFigmaDataToVSLowCodePlugin()
   }
   return {
