@@ -1,6 +1,6 @@
 # Vue3+vite
 
-figma基本插件，目前支持图层获取，后续计划将获取图层转化为代码，逐步完善中
+figma插件，目前主要用于配合vscode低代码插件lowlow来自动生成表单代码。
 
 
 
@@ -10,7 +10,7 @@ figma基本插件，目前支持图层获取，后续计划将获取图层转化
 
 ## 开发说明
 figma插件主要分为两个部分
-code.js：运行在主进程隔离沙箱里，可访问专门的 API 来操作 Figma 文档
+code.js：运行在主进程隔离沙箱里，可访问专门的 API 来操作 Figma 
 index.html：通过 iframe 嵌入在页面里的插件UI
 
 两部分通过postmessage通信
